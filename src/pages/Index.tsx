@@ -1,14 +1,23 @@
 import { useState } from "react";
 import { FileText, DollarSign, Info, Download, MessageCircle } from "lucide-react";
-import LoadingScreen from "@/components/LoadingScreen";
+// Removemos a importação do LoadingScreen pois não vamos mais usar aqui
+// import LoadingScreen from "@/components/LoadingScreen"; 
 import ServiceCard from "@/components/ServiceCard";
 import QuestionCard from "@/components/QuestionCard";
 import ChatInterface from "@/components/ChatInterface";
 import { Button } from "@/components/ui/button";
 import caioAvatar from "@/assets/caio-avatar.jpeg";
 
-const Index = () => {
-  const [isLoading, setIsLoading] = useState(true);
+interface IndexProps {
+  userContext?: {
+    name: string;
+    area: string;
+  };
+}
+
+const Index = ({ userContext }: IndexProps) => {
+  // Removemos o estado isLoading que causava a tela vermelha de "Carregando..."
+  // const [isLoading, setIsLoading] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [chatInitialMessage, setChatInitialMessage] = useState("");
 
@@ -44,22 +53,22 @@ const Index = () => {
     {
       question: "Nota está na esteira?",
       icon: FileText,
-      response: "Vou verificar o status da sua nota fiscal na esteira de processamento. Por favor, aguarde enquanto consulto as informações...",
+      response: "Vou verificar o status da sua nota fiscal na esteira de processamento.",
     },
     {
       question: "O pagamento foi sequenciado?",
       icon: DollarSign,
-      response: "Consultando o sequenciamento do seu pagamento. Vou verificar se já foi processado e qual o status atual...",
+      response: "Consultando o sequenciamento do seu pagamento.",
     },
     {
       question: "Preciso de informações sobre o processo de pagamentos.",
       icon: Info,
-      response: "Claro! Vou te explicar sobre nosso processo de pagamentos. O fluxo começa com a entrada da nota fiscal, seguido pela validação, aprovação e então o sequenciamento para pagamento...",
+      response: "Claro! Vou te explicar sobre nosso processo de pagamentos.",
     },
     {
       question: "Desejo baixar as notas pagas nessa semana!",
       icon: Download,
-      response: "Preparando o relatório de notas pagas desta semana. Em instantes você receberá um arquivo com todas as informações solicitadas...",
+      response: "Preparando o relatório de notas pagas desta semana.",
     },
   ];
 
@@ -73,9 +82,10 @@ const Index = () => {
     setIsChatOpen(true);
   };
 
-  if (isLoading) {
+  // REMOVIDO: O bloco que retornava o LoadingScreen
+  /* if (isLoading) {
     return <LoadingScreen onComplete={() => setIsLoading(false)} />;
-  }
+  } */
 
   return (
     <div className="min-h-screen p-5">
@@ -113,6 +123,13 @@ const Index = () => {
             <div>
               <h1 className="text-3xl font-bold text-primary mb-1">Caio</h1>
               <p className="text-muted-foreground">Assistente Virtual de Pagamentos</p>
+              {/* Exibe quem está logado */}
+              {userContext && (
+                <div className="mt-2 inline-flex items-center px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  Logado como: {userContext.name} ({userContext.area})
+                </div>
+              )}
             </div>
           </header>
 
@@ -139,6 +156,7 @@ const Index = () => {
                 isOpen={isChatOpen}
                 onClose={() => setIsChatOpen(false)}
                 initialMessage={chatInitialMessage}
+                userDepartment={userContext?.area || "Visitante"}
               />
             )}
 
